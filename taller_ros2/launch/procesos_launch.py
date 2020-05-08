@@ -25,17 +25,20 @@ def generate_launch_description():
     file_proceso_1 = Node(
         package='taller_ros2',
         node_executable='proceso_1',
-        output='screen')
+        ##output='screen'
+        )
 
     file_proceso_2 = Node(
         package='taller_ros2',
         node_executable='proceso_2',
-        output='screen')
+        ##output='screen'
+        )
 
     file_proceso_3 = Node(
         package='taller_ros2',
         node_executable='proceso_3',
-        output='screen')
+        output='screen'
+    )
 
     ld = LaunchDescription()
     ld.add_action(stdout_linebuf_envvar)

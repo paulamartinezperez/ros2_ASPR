@@ -206,8 +206,8 @@ public:
     response->y = y;
     response->z = z;
 
-    RCLCPP_INFO(get_logger(), "Incoming request [%s]", request->a.c_str());
-    RCLCPP_INFO(get_logger(), "sending back response: [%f, %f, %f]",
+    RCLCPP_INFO(get_logger(), "Incoming request [%s] from node_E", request->a.c_str());
+    RCLCPP_INFO(get_logger(), "sending back response to node_E: [%f, %f, %f]",
       response->x, response->y, response->z);
   }
 

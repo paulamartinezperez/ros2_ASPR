@@ -34,23 +34,32 @@ public:
   : Node("node_E")
   {
     client_ = create_client<practica_msgs::srv::GetString>("getstring");
+    client_stamped_ = create_client<practica_msgs::srv::GetPoseStamped>("getposestamped");
+
+    while (!client_->wait_for_service(1s)) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(get_logger(), "Interrupted while waiting for the service. Exiting.");
+        return;
+      }
+      RCLCPP_INFO(get_logger(), "service not available, waiting again...");
+    }
+
     timer_ = create_wall_timer(1s, std::bind(&Client::timer_callback, this));
 
-    client_stamped_ = create_client<practica_msgs::srv::GetPoseStamped>("getposestamped");
     timer_stamped_ = create_wall_timer(1s, std::bind(&Client::timer_stamped_callback, this));
   }
 
   void timer_callback()
   {
     auto request = std::make_shared<practica_msgs::srv::GetString::Request>();
-    request->a = "What is the last number received?";
+    request->a = "What is the last number received in node_B?";
 
     pending_responses_.push_back(client_->async_send_request(request));
 
     auto rp = pending_responses_.begin();
 
     while (rp != pending_responses_.end()) {
-      if (rp->valid() && rp->wait_for(0ms) == std::future_status::ready) {
+      if (rp->valid() && rp->wait_for(100ms) == std::future_status::ready) {
         auto resp = rp->get();
         RCLCPP_INFO(get_logger(), "Node B: [%s]",
           resp->num.c_str());
@@ -65,14 +74,14 @@ public:
   void timer_stamped_callback()
   {
     auto requeststamped = std::make_shared<practica_msgs::srv::GetPoseStamped::Request>();
-    requeststamped->a = "What is the last coordinates received?";
+    requeststamped->a = "What is the last coordinates received in node_D?";
 
     pending_responses_stamped_.push_back(client_stamped_->async_send_request(requeststamped));
 
     auto rp_stamped = pending_responses_stamped_.begin();
 
     while (rp_stamped != pending_responses_stamped_.end()) {
-      if (rp_stamped->valid() && rp_stamped->wait_for(0ms) == std::future_status::ready) {
+      if (rp_stamped->valid() && rp_stamped->wait_for(100ms) == std::future_status::ready) {
         auto resp_stamped = rp_stamped->get();
         RCLCPP_INFO(get_logger(), "Node D: [%f, %f, %f]",
           resp_stamped->x, resp_stamped->y, resp_stamped->z);
@@ -96,6 +105,7 @@ private:
 
   std::list<SharedFuturePose> pending_responses_stamped_;
 };
+
 
 
 int main(int argc, char ** argv)
