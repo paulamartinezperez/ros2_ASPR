@@ -60,7 +60,7 @@ class NodeSubscriber_Client : public rclcpp::Node
 {
 public:
   NodeSubscriber_Client()
-  : Node("node_B")
+  : Node("nodo_B")
   {
     sub_ = create_subscription<std_msgs::msg::String>(
       "topic_AB", rclcpp::QoS(100).best_effort(),
@@ -101,7 +101,7 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
-  auto node_A = std::make_shared<NodePublisher>("node_A", 50ms);
+  auto node_A = std::make_shared<NodePublisher>("nodo_A", 50ms);
   auto node_B = std::make_shared<NodeSubscriber_Client>();
 
   rclcpp::executors::SingleThreadedExecutor executor;
